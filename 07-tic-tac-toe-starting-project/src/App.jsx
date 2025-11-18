@@ -2,6 +2,14 @@ import { useState } from "react";
 import Player from "./components/Player";
 import Log from "./components/Log";
 import GameBoard from "./components/GameBoard";
+import GameOver from "./components/GmaeOver";
+import { WINNING_COMBINATIONS } from "./winnig-combinations";
+
+const initialGameBoard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
 
 function driveActivePlayer(gameTurn) {
   let currentPlayer = "X";
@@ -13,9 +21,36 @@ function driveActivePlayer(gameTurn) {
 }
 
 function App() {
-  const [gameTurn, setGameTurn] = useState([]);
+  const [gameTurns, setGameTurn] = useState([]);
 
-  const activePlayer = driveActivePlayer(gameTurn);
+  const activePlayer = driveActivePlayer(gameTurns);
+
+  let gameBoard = [...initialGameBoard.map((array) => [...array])];
+
+  for (let turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+
+    gameBoard[row][col] = player;
+  }
+
+  let winner = undefined;
+
+  for (let combination of WINNING_COMBINATIONS) {
+    const firstSquare = gameBoard[combination[0].row][combination[0].column];
+    const secondSquare = gameBoard[combination[1].row][combination[1].column];
+    const thirdSquare = gameBoard[combination[2].row][combination[2].column];
+
+    if (
+      firstSquare &&
+      firstSquare === secondSquare &&
+      firstSquare === thirdSquare
+    ) {
+      winner = firstSquare;
+    }
+  }
+
+  const hasDraw = gameTurns.length === 9 && !winner;
 
   function handleSelectFunction(rowIndex, colIndex) {
     setGameTurn((pervTurn) => {
@@ -33,6 +68,10 @@ function App() {
     });
   }
 
+  function handleRestart() {
+    setGameTurn([]);
+  }
+
   return (
     <main>
       <div id="game-container">
@@ -40,12 +79,15 @@ function App() {
           <Player name="Player 1" symbol="X" isActive={activePlayer === "X"} />
           <Player name="Player 2" symbol="O" isActive={activePlayer === "O"} />
         </ol>
+        {(winner || hasDraw) && (
+          <GameOver winner={winner} onRematch={handleRestart} />
+        )}
         <GameBoard
           handleSelectFunction={handleSelectFunction}
-          turns={gameTurn}
+          boards={gameBoard}
         />
       </div>
-      <Log logs={gameTurn} />
+      <Log logs={gameTurns} />
     </main>
   );
 }
