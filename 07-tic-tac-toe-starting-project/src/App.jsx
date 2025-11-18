@@ -2,28 +2,30 @@ import { useState } from "react";
 import Player from "./components/Player";
 import Log from "./components/Log";
 import GameBoard from "./components/GameBoard";
+
+function driveActivePlayer(gameTurn) {
+  let currentPlayer = "X";
+  if (!!gameTurn.length && gameTurn[0].player === "X") {
+    currentPlayer = "O";
+  }
+
+  return currentPlayer;
+}
+
 function App() {
   const [gameTurn, setGameTurn] = useState([]);
-  const [activePlayer, setActivePlayer] = useState("X");
+
+  const activePlayer = driveActivePlayer(gameTurn);
 
   function handleSelectFunction(rowIndex, colIndex) {
-    setActivePlayer((currentActivePlayer) =>
-      currentActivePlayer === "X" ? "O" : "X"
-    );
-
     setGameTurn((pervTurn) => {
-      let currentPlayer = "X";
-      if (!!pervTurn.length && pervTurn[0].player === "X") {
-        currentPlayer = "O";
-      }
-
       const updatedTurns = [
         {
           square: {
             row: rowIndex,
             col: colIndex,
           },
-          player: currentPlayer,
+          player: activePlayer,
         },
         ...pervTurn,
       ];
@@ -42,8 +44,8 @@ function App() {
           handleSelectFunction={handleSelectFunction}
           turns={gameTurn}
         />
-        <Log />
       </div>
+      <Log logs={gameTurn} />
     </main>
   );
 }

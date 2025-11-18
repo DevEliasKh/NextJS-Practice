@@ -23,6 +23,7 @@ export default function GameBoard({ handleSelectFunction, turns }) {
               <li key={colIndex}>
                 <button
                   onClick={() => handleSelectFunction(rowIndex, colIndex)}
+                  disabled={playerSymbol !== null}
                 >
                   {playerSymbol}
                 </button>

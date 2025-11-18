@@ -1,3 +1,13 @@
-export default function Log() {
-  return <ol id="log"></ol>;
+export default function Log({ logs }) {
+  return (
+    <ol id="log">
+      {logs?.map((log) => {
+        return (
+          <li key={`${log.square.row}_${log.square.col}`}>
+            {log.player} selected {log.square.row},{log.square.col}
+          </li>
+        );
+      })}
+    </ol>
+  );
 }
